@@ -28,54 +28,17 @@ echo 'sudo yum -y install nfs-utils'
 sudo yum -y install nfs-utils
 echo 'sudo mkdir /backup'
 sudo mkdir /backup
-echo 'sudo mkdir /mnt/backups'
-sudo mkdir /mnt/backups
+
 echo "sudo mount -t nfs -o nfsvers=4.1 -o rsize=1048576 -o wsize=1048576 -o timeo=600 -o retrans=2 -o hard $source /backup"
-sudo mount -t nfs -o nfsvers=4.1 -o rsize=1048576 -o wsize=1048576 -o timeo=600 -o retrans=2 -o hard $source /backup
-echo "sudo mount -t nfs -o nfsvers=4.1 -o rsize=1048576 -o wsize=1048576 -o timeo=600 -o retrans=2 -o hard $destination /mnt/backups"
-sudo mount -t nfs -o nfsvers=4.1 -o rsize=1048576 -o wsize=1048576 -o timeo=600 -o retrans=2 -o hard $destination /mnt/backups
+#sudo mount -t nfs -o nfsvers=4.1 -o rsize=1048576 -o wsize=1048576 -o timeo=600 -o retrans=2 -o hard $source /backup
+sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 fs-3552a70c.efs.ap-southeast-2.amazonaws.com:/ /backup
 
-# we need to decrement retain because we start counting with 0 and we need to remove the oldest backup
-let "retain=$retain-1"
-if sudo test -d /mnt/backups/$efsid/$interval.$retain; then
-  echo "sudo rm -rf /mnt/backups/$efsid/$interval.$retain"
-  sudo rm -rf /mnt/backups/$efsid/$interval.$retain
-fi
+echo "sudo aws s3 sync /backup $S3DestinationPath"
+#sudo aws s3 sync /backup $S3DestinationPath
+sudo aws s3 sync /backup s3://data-pipeline-am/backup-1
+syncStatus=$?
 
+echo "sudo aws s3 cp /tmp/efs-backup.log s3://data-pipeline-am/logs/$efsid-`date +%Y%m%d-%H%M`.log"
+sudo aws s3 mv /tmp/efs-backup.log s3://data-pipeline-am/logs/$efsid-`date +%Y%m%d-%H%M`.log
 
-# Rotate all previous backups (except the first one), up one level
-for x in `seq $retain -1 2`; do
-  if sudo test -d /mnt/backups/$efsid/$interval.$[$x-1]; then
-    echo "sudo mv /mnt/backups/$efsid/$interval.$[$x-1] /mnt/backups/$efsid/$interval.$x"
-    sudo mv /mnt/backups/$efsid/$interval.$[$x-1] /mnt/backups/$efsid/$interval.$x
-  fi
-done
-
-# Copy first backup with hard links, then replace first backup with new backup
-if sudo test -d /mnt/backups/$efsid/$interval.0 ; then
-  echo "sudo cp -al /mnt/backups/$efsid/$interval.0 /mnt/backups/$efsid/$interval.1"
-  sudo cp -al /mnt/backups/$efsid/$interval.0 /mnt/backups/$efsid/$interval.1
-fi
-if [ ! -d /mnt/backups/$efsid ]; then
-  echo "sudo mkdir -p /mnt/backups/$efsid"
-  sudo mkdir -p /mnt/backups/$efsid
-  echo "sudo chmod 700 /mnt/backups/$efsid"
-  sudo chmod 700 /mnt/backups/$efsid
-fi
-if [ ! -d /mnt/backups/efsbackup-logs ]; then
-  echo "sudo mkdir -p /mnt/backups/efsbackup-logs"
-  sudo mkdir -p /mnt/backups/efsbackup-logs
-  echo "sudo chmod 700 /mnt/backups/efsbackup-logs"
-  sudo chmod 700 /mnt/backups/efsbackup-logs
-fi
-echo "sudo rm /tmp/efs-backup.log"
-sudo rm /tmp/efs-backup.log
-echo "sudo rsync -ah --stats --delete --numeric-ids --log-file=/tmp/efs-backup.log /backup/ /mnt/backups/$efsid/$interval.0/"
-sudo rsync -ah --stats --delete --numeric-ids --log-file=/tmp/efs-backup.log /backup/ /mnt/backups/$efsid/$interval.0/
-echo "sudo aws s3 sync /backup $S3DestinationPath "
-rsyncStatus=$?
-echo "sudo cp /tmp/efs-backup.log /mnt/backups/efsbackup-logs/$efsid-`date +%Y%m%d-%H%M`.log"
-sudo cp /tmp/efs-backup.log /mnt/backups/efsbackup-logs/$efsid-`date +%Y%m%d-%H%M`.log
-echo "sudo touch /mnt/backups/$efsid/$interval.0/"
-sudo touch /mnt/backups/$efsid/$interval.0/
-exit $rsyncStatus
+exit $syncStatus
