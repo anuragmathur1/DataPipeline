@@ -15,8 +15,8 @@
 
 # Input arguments
 source=$1
-efsid=$2
-S3DestinationPath=$3
+#efsid=$2
+S3DestinationPath=$2
 
 # Prepare system for rsync
 echo 'sudo yum -y install nfs-utils'
@@ -30,7 +30,7 @@ sudo mount -t nfs -o nfsvers=4.1 -o rsize=1048576 -o wsize=1048576 -o timeo=600 
 echo "sudo aws s3 sync /backup $S3DestinationPath"
 sudo aws s3 sync /backup $S3DestinationPath
 syncStatus=$?
-echo "sudo aws s3 cp /tmp/efs-backup.log s3://datapipeline.elmodev.com/logs/$efsid-`date +%Y%m%d-%H%M`.log"
-sudo aws s3 mv /tmp/efs-backup.log s3://datapipeline.elmodev.com/logs/$efsid-`date +%Y%m%d-%H%M`.log
+# echo "sudo aws s3 cp /tmp/efs-backup.log s3://datapipeline.elmodev.com/logs/$efsid-`date +%Y%m%d-%H%M`.log"
+# sudo aws s3 mv /tmp/efs-backup.log s3://datapipeline.elmodev.com/logs/$efsid-`date +%Y%m%d-%H%M`.log
 
 exit $syncStatus
