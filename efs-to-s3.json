@@ -40,7 +40,6 @@
       "command" : "#{myShellCmd}",
       "scriptArgument" : [
         "#{myEfsSource}",
-        "#{myEfsID}",
         "#{myS3DestinationPath}"
       ],
       "type" : "ShellCommandActivity",
@@ -50,7 +49,7 @@
   "parameters" : [
     {
       "id" : "myShellCmd",
-      "default" : "wget -O /tmp/efs-to-s3-backup.sh https://github.com/anuragmathur1/DataPipeline/blob/master/efs-to-s3.sh\nchmod a+x /tmp/efs-to-s3-backup.sh.sh\n/tmp/efs-to-s3-backup.sh $1 $2 $3",
+      "default" : "wget -O /tmp/efs-to-s3-backup.sh https://github.com/anuragmathur1/DataPipeline/blob/master/efs-to-s3.sh\nchmod a+x /tmp/efs-to-s3-backup.sh.sh\n/tmp/efs-to-s3-backup.sh $1 $2",
       "description" : "Shell command to run.",
       "type" : "String"
     },
@@ -67,13 +66,13 @@
     },
     {
       "id" : "mySubnetID",
-      "default" : "subnet-3a96145e",
+      "default" : "subnet-53c2b637",
       "description" : "VPC subnet for your backup EC2 instance (ideally the same subnet used for the production EFS mount point).",
       "type" : "String"
     },
     {
       "id" : "mySrcSecGroupID",
-      "default" : "sg-8c45afeb",
+      "default" : "sg-1470c973",
       "description" : "Security group that can connect to the Production EFS mount point.",
       "type" : "String"
     },
@@ -90,20 +89,14 @@
       "type" : "String"
     },
     {
-      "id" : "myEfsID",
-      "default" : "backup-fs-1",
-      "description" : "Name for the directory that will contain your backups.",
-      "type" : "String"
-    },
-    {
       "id" : "myEfsSource",
-      "default" : "10.0.1.32:/",
+      "default" : "172.31.25.251:/",
       "description" : "Production EFS mount target IP address.",
       "type" : "String"
     },
     {
       "id" : "myImageID",
-      "default" : "ami-12345678",
+      "default" : "ami-33996b51",
       "description" : "AMI ID for the EC2 instance.",
       "type" : "String"
     },
