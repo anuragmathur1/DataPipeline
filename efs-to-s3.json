@@ -49,7 +49,7 @@
   "parameters" : [
     {
       "id" : "myShellCmd",
-      "default" : "wget -O /tmp/efs-to-s3-backup.sh https://github.com/anuragmathur1/DataPipeline/blob/master/efs-to-s3.sh\nchmod a+x /tmp/efs-to-s3-backup.sh.sh\n/tmp/efs-to-s3-backup.sh $1 $2",
+      "default" : "wget -O /tmp/efs-to-s3-backup.sh https://raw.githubusercontent.com/anuragmathur1/DataPipeline/master/efs-to-s3.sh\nchmod a+x /tmp/efs-to-s3-backup.sh.sh\n/tmp/efs-to-s3-backup.sh $1 $2",
       "description" : "Shell command to run.",
       "type" : "String"
     },
