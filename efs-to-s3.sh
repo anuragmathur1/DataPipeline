@@ -1,22 +1,4 @@
 #!/bin/bash
-# Example would be to run this script as follows:
-# Every 6 hours; retain last 4 backups
-# efs-backup.sh $src $dst hourly 4 efs-12345
-# Once a day; retain last 31 days
-# efs-backup.sh $src $dst daily 31 efs-12345
-# Once a week; retain 4 weeks of backup
-# efs-backup.sh $src $dst weekly 7 efs-12345
-# Once a month; retain 3 months of backups
-# efs-backup.sh $src $dst monthly 3 efs-12345
-#
-# Snapshots will look like:
-# $dst/$efsid/hourly.0-3; daily.0-30; weekly.0-3; monthly.0-2
-
-
-# Input arguments
-#source=
-#efsid=$2
-#S3DestinationPath=$2
 
 # Prepare system for rsync
 echo 'sudo yum -y install nfs-utils'
