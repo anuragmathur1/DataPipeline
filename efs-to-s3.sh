@@ -15,5 +15,5 @@ syncStatus=$?
 aws s3 cp /tmp/file.txt s3://data-pipeline-am/logs/
 # echo "sudo aws s3 cp /tmp/efs-backup.log s3://datapipeline.elmodev.com/logs/$efsid-`date +%Y%m%d-%H%M`.log"
 # sudo aws s3 mv /tmp/efs-backup.log s3://datapipeline.elmodev.com/logs/$efsid-`date +%Y%m%d-%H%M`.log
-sleep 300
+#sleep 300
 exit $syncStatus
